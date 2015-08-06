@@ -1,0 +1,18 @@
+  String strConnection = "Data Source=.\\SQLEXPRESS;AttachDbFilename='C:\\Users\\Hemant\\documents\\visual studio 2010\\Projects\\CRMdata\\CRMdata\\App_Data\\Database1.mdf';Integrated Security=True;User Instance=True";
+        //file upload path
+        string path = FileUpload1.PostedFile.FileName;
+        //string path="C:\\ Users\\ Hemant\\Documents\\example.xlsx";
+        //Create connection string to Excel work book
+        string excelConnectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + path + ";Extended Properties=Excel 12.0;Persist Security Info=False";
+        //Create Connection to Excel work book
+        OleDbConnection excelConnection = new OleDbConnection(excelConnectionString);
+        //Create OleDbCommand to fetch data from Excel
+        OleDbCommand cmd = new OleDbCommand("Select [ID],[Name],[Designation] from [Sheet1$]", excelConnection);
+        excelConnection.Open();
+        OleDbDataReader dReader;
+        dReader = cmd.ExecuteReader();
+        SqlBulkCopy sqlBulk = new SqlBulkCopy(strConnection);
+        //Give your Destination table name
+        sqlBulk.DestinationTableName = "Excel_table";
+        sqlBulk.WriteToServer(dReader);
+        excelConnection.Close();
